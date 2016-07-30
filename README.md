@@ -7,10 +7,18 @@ Requires Python 2.x and https://github.com/Ensembl/WiggleTools.
 
 ```
 python region_matrix.py --regions <3-column COORDINATE-SORTED BED file specifying regions> \
-                        --bams <space-separated list of BAM files> \
+                        [--bams <space-separated list of BAM files> OR --bam-manifest <path to BAM manifest]\
                         --wiggletools <path to wiggletools executable> \
                         -p <max number of wiggletools processes to run at once>
 ```
+
+## Specifying BAMs
+
+BAMs may be specified as a space-separated list of paths after `--bams` or as the path to a BAM manifest file as the argument of `--bam-manifest`. Each line of the BAM manifest file takes the form
+```
+<path to indexed BAM><TAB><sample name>
+```
+. If BAMs are specified as the argument of `--bams`, sample names are taken to be their paths.
 
 ## Output
 
