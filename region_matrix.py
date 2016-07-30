@@ -54,31 +54,22 @@ def aucs_from_regions(wiggletools, region_bed, indexed_bam, regions):
     current_region_index = -1
     current_region = (None, None, None)
     last_end = None
-    with open('/Users/eterna/statdiag', 'w') as statdiag:
-        for line in wiggletools_process.stdout:
-            tokens = line.strip().split('\t')
-            chrom, start, end, coverage = (
-                    tokens[0], int(tokens[1]), int(tokens[2]),
-                    int(float(tokens[3]))
-                )
-            if last_end != start:
-                '''Must advance to next region of regions list iff we've reached a
-                new region in region BED.'''
-                while (chrom != current_region[0]
-                        or start < current_region[1]
-                        or end > current_region[2]):
-                    current_region_index += 1
-                    current_region = regions[current_region_index]
-            print >>statdiag, '-------'
-            print >>statdiag, chrom
-            print >>statdiag, start
-            print >>statdiag, end
-            print >>statdiag, coverage
-            print >>statdiag, current_region_index
-            print >>statdiag, current_region
-            print >>statdiag, '-------'
-            aucs[current_region_index] += (end - start) * coverage
-            last_end = end
+    for line in wiggletools_process.stdout:
+        tokens = line.strip().split('\t')
+        chrom, start, end, coverage = (
+                tokens[0], int(tokens[1]), int(tokens[2]),
+                int(float(tokens[3]))
+            )
+        if last_end != start:
+            '''Must advance to next region of regions list iff we've reached a
+            new region in region BED.'''
+            while (chrom != current_region[0]
+                    or start < current_region[1]
+                    or end > current_region[2]):
+                current_region_index += 1
+                current_region = regions[current_region_index]
+        aucs[current_region_index] += (end - start) * coverage
+        last_end = end
     wiggletools_process.terminate()
     exit_code = wiggletools_process.wait()
     return (aucs, exit_code)
@@ -152,7 +143,6 @@ if __name__ == '__main__':
                 'Nonzero exit code encountered computing output matrix.'
             )
     # Dump final matrix
-    print output_matrix
     print '\t'.join([''] + ['{}:{}-{}'.format(*region) for region in regions])
     for i, bam in enumerate(args.bams):
         print '\t'.join([bam] + map(str, output_matrix[i][0]))
