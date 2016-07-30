@@ -94,9 +94,12 @@ if __name__ == '__main__':
                  'sort this beforehand with '
                  '"sort -k1,1 -k2,2n -k3,3n <BED file>"'
         )
-    parser.add_argument('--bams', type=str, required=True, nargs='+',
+    parser.add_argument('--bams', type=str, required=False, nargs='+',
             help='space-separated list of paths to BAM files; all BAMs must '
                  'be indexed'
+        )
+    parser.add_argument('-m', '--bam-manifest', type=str, required=False,
+            help='manifest file listing paths to BAMs and sample names'
         )
     parser.add_argument('--wiggletools', type=str, required=False,
             default='wiggletools',
@@ -114,6 +117,30 @@ if __name__ == '__main__':
                 'binary exists at the specified path (i.e., the argument of '
                 '--wiggletools) and is executable.'
             )
+    if args.bams and args.bam_manifest:
+        raise RuntimeError(
+                'BAMs are specified with either --bams or --bam-manifest, but '
+                'not both.'
+            )
+    elif not (args.bams or args.bam_manifest):
+        raise RuntimeError(
+                'BAMs must be specified as arguments of --bams or in a '
+                'manifest file specified as the argument of --bam-manifest.'
+            )
+    if args.bams:
+        # Use BAMs specified at command line
+        bams = [(bam, bam) for bam in args.bams]
+    else:
+        # Read manifest file
+        bams = []
+        with open(args.bam_manifest) as bam_stream:
+            for line in bam_stream:
+                tokens = line.strip().split('\t')
+                try:
+                    bams.append((tokens[0], tokens[1]))
+                except IndexError:
+                    # No sample name specified
+                    bams.append((tokens[0], tokens[0]))
     args.wiggletools = os.path.abspath(args.wiggletools)
     print >>sys.stderr, 'Reading regions...'
     # Store regions in interval tree to increment in case of overlaps
@@ -129,8 +156,8 @@ if __name__ == '__main__':
     output_matrix = []
     output_result = pool.map_async(
             star_aucs_from_regions,
-            [[args.wiggletools, args.regions, bam, regions]
-                for bam in args.bams],
+            [[args.wiggletools, args.regions, bam[0], regions]
+                for bam in bams],
             callback=output_matrix.extend
         )
     while not output_result.ready():
@@ -144,5 +171,5 @@ if __name__ == '__main__':
             )
     # Dump final matrix
     print '\t'.join([''] + ['{}:{}-{}'.format(*region) for region in regions])
-    for i, bam in enumerate(args.bams):
-        print '\t'.join([bam] + map(str, output_matrix[i][0]))
+    for i, bam in enumerate(bams):
+        print '\t'.join([bam[1]] + map(str, output_matrix[i][0]))
