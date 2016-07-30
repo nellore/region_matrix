@@ -14,7 +14,7 @@ python region_matrix.py --regions <3-column BED file specifying regions> \
 
 ## Output
 
-Matrix whose `(i, j)`th element is the AUC of the `i`th sample in the `j`th region. Output is written to stdout.
+Table whose `(i, j)`th entry is the AUC of the `i`th sample in the `j`th region. Output is written to stdout; rows are labeled by sample, and columns are labeled by region.
 
 ## License
 
