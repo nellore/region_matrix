@@ -1,7 +1,7 @@
 # Region matrix
-is a tool for writing the matrix of areas-under-the-curve (AUCs) of indexed BAMs in regions specified by a BED file. An AUC is the sum of the number of reads aligning across every base of the region. Only primary alignments in each BAM file are considered. When specifying regions in the BED file, remember that its coordinates are 0-based and half-open: the start coordinate is included in the region, and the end coordinate is excluded from the region.
+is a tool for writing the matrix of areas-under-the-curve (AUCs) of indexed BAMs in regions specified by a BED file. An AUC is the sum of the number of reads aligning across every base of the region. Only primary alignments in each BAM file are considered. When specifying regions in the BED file, remember that its coordinates are 0-based and half-open: the start coordinate is included in the region, while the end coordinate is excluded from the region.
 
-Require Python 2.x and https://github.com/Ensembl/WiggleTools.
+Requires Python 2.x and https://github.com/Ensembl/WiggleTools.
 
 ## Usage
 
