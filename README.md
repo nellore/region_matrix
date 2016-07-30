@@ -6,7 +6,7 @@ Require Python 2.x and https://github.com/Ensembl/WiggleTools.
 ## Usage
 
 ```
-python region_matrix.py --regions <3-column BED file specifying regions> \
+python region_matrix.py --regions <3-column COORDINATE-SORTED BED file specifying regions> \
                         --bams <space-separated list of BAM files> \
                         --wiggletools <path to wiggletools executable> \
                         -p <max number of wiggletools processes to run at once>
